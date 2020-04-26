@@ -1,3 +1,3 @@
-import { jwt } from './jwt';
+const { jwt } = require('./jwt');
 
-export default { jwt };
+module.exports = { jwt };
