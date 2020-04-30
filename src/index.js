@@ -1,3 +1,4 @@
-const { jwt } = require('./jwt');
+const googleAuth = require('./googleAuth');
+const initializeSession = require('./initializeSession');
 
-module.exports = { jwt };
+module.exports = { googleAuth, initializeSession };
