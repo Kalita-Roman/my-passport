@@ -1,4 +1,3 @@
-const path = require('path');
 const passport = require('passport');
 const { Router } = require('express');
 const { OAuth2Strategy: GoogleStrategy } = require('passport-google-oauth');
