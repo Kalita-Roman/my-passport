@@ -3,33 +3,44 @@ const { Router } = require('express');
 const { OAuth2Strategy: GoogleStrategy } = require('passport-google-oauth');
 
 const GOOGLE = 'google';
+const callbackURL = '/google/callback';
 
 const googleAuth = (options) => {
     const {
         clientID,
         clientSecret,
-    } = options;
+        scope,
+        verify,
+        serialize,
+        deserialize
+    } = { 
+        scope: ['profile'],
+        verify: (accessToken, secretToken, profile, cb) => {
+            cb(null, profile);
+        },
+        serialize: (user, cb) => {
+            // console.log('serialize', user);
+            cb(null, user);
+        },
+        deserialize: (user, cb) => {
+            // console.log('deserialize', user);
+            cb(null, user);Ex
+        },
+        ...options
+    };
     
     passport.use(new GoogleStrategy(
         {
             clientID,
             clientSecret,
-            callbackURL: '/google/callback',
+            callbackURL,
         },
-        (accessToken, secretToken, profile, cb) => {
-            cb(null, profile);
-        },
+        verify,
     ));
 
-    passport.serializeUser((user, cb) => {
-        // console.log('serialize', user);
-        cb(null, user);
-    });
+    passport.serializeUser(serialize);
 
-    passport.deserializeUser((user, cb) => {
-        // console.log('deserialize', user);
-        cb(null, user);
-    });
+    passport.deserializeUser(deserialize);
 
     const route = new Router();
 
@@ -39,10 +50,10 @@ const googleAuth = (options) => {
             req.session.referer = req.headers.referer;
             next();
         },
-        passport.authenticate(GOOGLE, { scope: ['profile'] }),
+        passport.authenticate(GOOGLE, { scope }),
     );
     route.get(
-        '/google/callback',
+        callbackURL,
         passport.authenticate(GOOGLE, {
             failureRedirect: '/fail',
         }),
