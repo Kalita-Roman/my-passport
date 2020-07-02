@@ -10,9 +10,6 @@
     "url": "git+https://github.com/Kalita-Roman/my-passport.git"
   },
   "dependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/preset-env": "^7.9.5",
-    "@babel/register": "^7.9.0",
     "compose-middleware": "^5.0.1",
     "express": "^4.17.1",
     "passport": "^0.4.1",

@@ -1,4 +1,4 @@
 const googleAuth = require('./googleAuth');
-const initializePassportSession = require('./initializePassportSession');
+const initializeSession = require('./initializeSession');
 
-module.exports = { googleAuth, initializePassportSession };
+module.exports = { googleAuth, initializeSession };
