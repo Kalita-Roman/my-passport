@@ -4,6 +4,7 @@ const { OAuth2Strategy: GoogleStrategy } = require('passport-google-oauth');
 
 const GOOGLE = 'google';
 const callbackURL = '/google/callback';
+const loginURL = '/google/login';
 
 const googleAuth = (options) => {
     const {
@@ -12,7 +13,9 @@ const googleAuth = (options) => {
         scope,
         verify,
         serialize,
-        deserialize
+        deserialize,
+        successUrl,
+        failUrl,
     } = { 
         scope: ['profile'],
         verify: (accessToken, secretToken, profile, cb) => {
@@ -26,6 +29,8 @@ const googleAuth = (options) => {
             // console.log('deserialize', user);
             cb(null, user);
         },
+        successUrl: '/success',
+        failUrl: '/fail',
         ...options
     };
     
@@ -45,32 +50,19 @@ const googleAuth = (options) => {
     const route = new Router();
 
     route.get(
-        '/google/login',
-        (req, res, next) => {
-            req.session.referer = req.headers.referer;
-            next();
-        },
+        loginURL,
         passport.authenticate(GOOGLE, { scope }),
     );
     route.get(
         callbackURL,
         passport.authenticate(GOOGLE, {
-            failureRedirect: '/fail',
+            successRedirect: successUrl,
+            failureRedirect: failUrl,
         }),
-        (req, res) => {
-            // console.log('callback success');
-            const { referer } = req.session;
-            req.session.referer = null;
-            res.redirect(referer);
-        },
-    );
-    route.get(
-        '/google/fail',
-        (req, res) => res.redirect(req.headers.referer),
     );
     route.get('/google/logout', (req, res) => {
         req.logout();
-        res.redirect(req.headers.referer);
+        res.redirect(successUrl);
     });
 
     return route;
