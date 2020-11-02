@@ -3,8 +3,6 @@ const { Router } = require('express');
 const { OAuth2Strategy: GoogleStrategy } = require('passport-google-oauth');
 
 const GOOGLE = 'google';
-const callbackURL = '/google/callback';
-const loginURL = '/google/login';
 
 const googleAuth = (options) => {
     const {
@@ -14,8 +12,10 @@ const googleAuth = (options) => {
         verify,
         serialize,
         deserialize,
-        successUrl,
-        failUrl,
+        loginURL,
+        callbackURL,
+        successURL,
+        failURL,
     } = { 
         scope: ['profile'],
         verify: (accessToken, secretToken, profile, cb) => {
@@ -29,11 +29,13 @@ const googleAuth = (options) => {
             // console.log('deserialize', user);
             cb(null, user);
         },
-        successUrl: '/success',
-        failUrl: '/fail',
-        ...options
+        loginURL: '/login',
+        callbackURL: '/callback',
+        successURL: '/success',
+        failURL: '/fail',
+        ...options,
     };
-    
+
     passport.use(new GoogleStrategy(
         {
             clientID,
@@ -56,14 +58,10 @@ const googleAuth = (options) => {
     route.get(
         callbackURL,
         passport.authenticate(GOOGLE, {
-            successRedirect: successUrl,
-            failureRedirect: failUrl,
+            successRedirect: successURL,
+            failureRedirect: failURL,
         }),
     );
-    route.get('/google/logout', (req, res) => {
-        req.logout();
-        res.redirect(successUrl);
-    });
 
     return route;
 }
